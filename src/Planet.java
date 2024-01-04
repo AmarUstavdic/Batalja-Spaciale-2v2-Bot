@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Objects;
 
 public class Planet {
@@ -14,6 +16,10 @@ public class Planet {
 
     // Contains distance from this planet, to every other planet
     private int[] distanceTable;
+    // indices are basically turns needed for fleets to arrive
+    // keys in hashmap are IDs of individual fleets
+    private final HashMap<Integer, Fleet>[] defenders;
+    private final HashMap<Integer, Fleet>[] attackers;
 
 
     public Planet(int name, int x, int y, float pSize, int fSize, String color, PlanetManager planetManager) {
@@ -25,7 +31,73 @@ public class Planet {
         this.planetSize = pSize;
         this.fleetSize = fSize;
         this.planetColor = color;
+        this.defenders = new HashMap[universe.getMaxPlanetDistanceInTurns()];
+        for (int i = 0; i < universe.getMaxPlanetDistanceInTurns(); i++) {
+            defenders[i] = new HashMap<>();
+        }
+        this.attackers = new HashMap[universe.getMaxPlanetDistanceInTurns()];
+        for (int i = 0; i < universe.getMaxPlanetDistanceInTurns(); i++) {
+            attackers[i] = new HashMap<>();
+        }
     }
+
+
+    public int[] attackersInTurns() {
+        int[] a = new int[attackers.length];
+        for (int i = 0; i < attackers.length; i++) {
+            HashMap<Integer, Fleet> attackerMap = attackers[i];
+            for (Fleet fleet : attackerMap.values()) {
+                a[i] += fleet.getFleetSize();
+            }
+        }
+        return a;
+    }
+
+
+    public int getNumberOfFleetsOverNTurns(int nTurns) {
+        // number of reinforcements + generated fleets
+        // for now just for simplicity sake only taking into a count generated
+        return (int) (this.planetSize * 10 * nTurns);
+    }
+
+
+
+
+
+    // TODO: Make sure real time needed turns for index are calculated correctly
+    public boolean isTrackingFleet(int currentTurn, int neededTurns, int fleetName) {
+        return  attackers[neededTurns - currentTurn + 1].containsKey(fleetName) ||
+                defenders[neededTurns - currentTurn + 1].containsKey(fleetName);
+    }
+
+    public void updateFleet(int currentTurn, int neededTurns, int fleetName) {
+        Fleet fleet;
+        fleet = attackers[neededTurns - currentTurn + 1].get(fleetName);
+        attackers[neededTurns - currentTurn + 1].remove(fleetName);
+        if (fleet == null) {
+            fleet = defenders[neededTurns - currentTurn + 1].get(fleetName);
+            defenders[neededTurns - currentTurn + 1].remove(fleetName);
+        }
+        fleet.setCurrentTurn(currentTurn);
+        if (isAttacker(fleet.getFleetColor())) {
+            attackers[neededTurns - currentTurn].put(fleetName, fleet);
+        } else {
+            defenders[neededTurns - currentTurn].put(fleetName, fleet);
+        }
+    }
+
+    public void trackFleet(Fleet fleet, boolean attacker) {
+        if (attacker) {
+            attackers[fleet.getNeededTurns() - fleet.getCurrentTurn()].put(fleet.getFleetName(), fleet);
+        } else {
+            defenders[fleet.getNeededTurns() - fleet.getCurrentTurn()].put(fleet.getFleetName(), fleet);
+        }
+    }
+
+    private boolean isAttacker(String fleetColor) {
+        return !(fleetColor.equals(universe.getMyColor()) || fleetColor.equals(universe.getTeammateColor()));
+    }
+
 
     public boolean isOwnershipChanged(String newColor) {
         return !(Objects.equals(planetColor, newColor));
@@ -36,6 +108,15 @@ public class Planet {
         return (int) euclidean / 2;
     }
 
+
+
+
+    public void clearInactiveFleets() {
+        attackers[0] = new HashMap<>();
+        attackers[1] = new HashMap<>();
+        defenders[0] = new HashMap<>();
+        defenders[1] = new HashMap<>();
+    }
 
     /**
      *  If there is no enemy or neutral planet in universe, the function returns -1;
@@ -66,6 +147,10 @@ public class Planet {
 
     public int getPositionY() {
         return positionY;
+    }
+
+    public int getFleetSize() {
+        return fleetSize;
     }
 
     public String getPlanetColor() {

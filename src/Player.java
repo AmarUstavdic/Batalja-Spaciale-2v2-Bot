@@ -12,7 +12,7 @@ public class Player {
 
 	public static Universe universe = new Universe();
 	public static PlanetManager planetManager = new PlanetManager(universe);
-	public static FleetManager fleetManager = new FleetManager(universe);
+	public static FleetManager fleetManager = new FleetManager(universe, planetManager);
 
 
 	public static void main(String[] args) throws Exception {
@@ -27,7 +27,7 @@ public class Player {
 					planetManager.initDistanceTables();
 				}
 				// Clean fleet manager, for not containing dead values
-				fleetManager.removeDeadFleets();
+				fleetManager.clearInactiveFleets();
 
 
 				ArrayList<Planet> myPlanets = planetManager.getMyPlanets();
@@ -54,7 +54,20 @@ public class Player {
 
 					if (target != -1) {
 						for(Planet p : myPlanets) {
-							System.out.println("A " + p.getName() + " " + target + " " + 1);
+							// index of attacker is number of turns needed for number of attackers to arrive
+							int[] attackers = p.attackersInTurns();
+							int dispatch = 0;
+                            for (int i = 1; i < attackers.length; i++) {
+								int fInNTurns = p.getFleetSize() + p.getNumberOfFleetsOverNTurns(i);
+								int diff = fInNTurns - attackers[i];
+								if (diff > dispatch) {
+									dispatch = diff;
+								} else {
+									break;
+								}
+							}
+
+							System.out.println("A " + p.getName() + " " + target + " " + dispatch);
 						}
 					}
 

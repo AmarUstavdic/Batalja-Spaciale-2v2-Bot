@@ -28,6 +28,26 @@ public class Fleet {
         return referenced;
     }
 
+    public int getFleetName() {
+        return fleetName;
+    }
+
+    public int getCurrentTurn() {
+        return currentTurn;
+    }
+
+    public int getNeededTurns() {
+        return neededTurns;
+    }
+
+    public int getFleetSize() {
+        return fleetSize;
+    }
+
+    public String getFleetColor() {
+        return fleetColor;
+    }
+
     public void setReferenced(boolean referenced) {
         this.referenced = referenced;
     }

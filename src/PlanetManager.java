@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 public class PlanetManager {
 
@@ -124,6 +125,14 @@ public class PlanetManager {
 
     public Planet getPlanet(int name) {
         return planets.get(name);
+    }
+
+
+    public void clearInactiveFleets() {
+        for (Planet planet : planets.values()) {
+
+
+        }
     }
 
     /**
