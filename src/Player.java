@@ -28,23 +28,11 @@ public class Player {
 	public static void main(String[] args) throws Exception {
 
 		try {
-			Random rand = new Random(); // source of random for random moves
+			Random rand = new Random();
 
-			/*
-				**************
-				Main game loop
-				**************
-			  	- each iteration of the loop is one turn.
-			  	- this will loop until we stop playing the game
-			  	- we will be stopped if we die/win or if we crash
-			*/
+
 			while (true) {
-				/*
-					- at the start of turn we first receive data
-					about the universe from the game.
-					- data will be loaded into the static variables of
-					this class
-				*/
+
 				getGameState();
 
 				/*
