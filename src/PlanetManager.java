@@ -4,13 +4,15 @@ import java.util.HashSet;
 
 public class PlanetManager {
 
+    private boolean distanceTablesInitialized = false;
+
     private final Universe universe;
     private final HashMap<Integer, Planet> planets;
     private final HashSet<Integer> myPlanets;
     private final HashSet<Integer> tmPlanets;
     private final HashSet<Integer> e1Planets;
     private final HashSet<Integer> e2Planets;
-    private HashSet<Integer> nPlanets;
+    private final HashSet<Integer> nPlanets;
 
 
     public PlanetManager(Universe universe) {
@@ -43,7 +45,7 @@ public class PlanetManager {
             return;
         }
 
-        p = new Planet(name, x, y, pSize, fSize, tokens[6]);
+        p = new Planet(name, x, y, pSize, fSize, tokens[6], this);
         planets.put(name, p);
         addPlanetName(name, tokens[6]);
     }
@@ -83,8 +85,33 @@ public class PlanetManager {
     }
 
 
+    public void initDistanceTables() {
+        // first planet in game has index 0
+        for (int i = 0; i < planets.size(); i++) {
+
+            Planet p = planets.get(i);
+            int[] distanceTable = new int[planets.size()];
+            for (int j = 0; j < planets.size(); j++) {
+                Planet o = planets.get(j);
+                distanceTable[j] = p.getDistanceInTurns(o);
+            }
+            p.setDistanceTable(distanceTable);
+        }
+        distanceTablesInitialized = true;
+    }
+
+
+
     public ArrayList<Integer> getMyPlanetIds() {
         return new ArrayList<>(myPlanets);
+    }
+
+    public ArrayList<Planet> getMyPlanets() {
+        ArrayList<Planet> pa = new ArrayList<>();
+        for (int pid : myPlanets) {
+            pa.add(planets.get(pid));
+        }
+        return pa;
     }
 
     public ArrayList<Integer> getAllPotentialTargets() {
@@ -95,4 +122,15 @@ public class PlanetManager {
         return potentialTargets;
     }
 
+    public Planet getPlanet(int name) {
+        return planets.get(name);
+    }
+
+    public Universe getUniverse() {
+        return universe;
+    }
+
+    public boolean isDistanceTablesInitialized() {
+        return distanceTablesInitialized;
+    }
 }

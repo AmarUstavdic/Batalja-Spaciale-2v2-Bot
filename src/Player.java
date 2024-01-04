@@ -23,22 +23,25 @@ public class Player {
 			while (true) {
 
 				getGameState();
+				// At first iteration of the game calculate distance tables
+				if (!planetManager.isDistanceTablesInitialized()) {
+					planetManager.initDistanceTables();
+				}
 
-				ArrayList<Integer> myPlanets = planetManager.getMyPlanetIds();
-				ArrayList<Integer> potentialTargets = planetManager.getAllPotentialTargets();
+				ArrayList<Planet> myPlanets = planetManager.getMyPlanets();
 
 
-				if (!potentialTargets.isEmpty() && !myPlanets.isEmpty()) {
-					for (int i = 0 ; i < myPlanets.size() ; i++) {
-						String myPlanet = myPlanets.get(i).toString();
-						int randomEnemyIndex = rand.nextInt(potentialTargets.size());
-						String randomTargetPlanet = String.valueOf(potentialTargets.get(randomEnemyIndex));
-						/*
-							- printing the attack will tell the game to attack
-							- be careful to only use System.out.println for printing game commands
-							- for debugging you can use logToFile() method
-						*/
-						System.out.println("A " + myPlanet + " " + randomTargetPlanet);
+				// playground and chaos for now :)
+
+
+
+
+				if (!myPlanets.isEmpty()) {
+					for (Planet p : myPlanets) {
+						int closest = p.getClosestEnemy();
+						if (closest != -1) {
+							System.out.println("A " + p.getName() + " " + closest);
+						}
 					}
 				}
 				
@@ -86,7 +89,7 @@ public class Player {
 		String line = "";
 		while (!(line = stdin.readLine()).equals("S")) {
 
-			logToFile(line); 
+			//logToFile(line);
 
 			switch (line.charAt(0)) {
 				case 'U' -> universe.initialize(line);
