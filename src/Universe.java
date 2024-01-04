@@ -15,10 +15,10 @@ public class Universe {
 
         String color = tokens[3];
         switch (color) {
-            case "green" -> { myColor = color; tmColor = "yellow"; e1Color = "blue"; e2Color = "cyan"; }
-            case "blue" -> { myColor = color; tmColor = "cyan"; e1Color = "green"; e2Color = "yellow"; }
-            case "yellow" -> { myColor = color; tmColor = "green"; e1Color = "blue"; e2Color = "cyan"; }
-            case "cyan" -> { myColor = color; tmColor = "blue"; e1Color = "green"; e2Color = "yellow"; }
+            case "green": { myColor = color; tmColor = "yellow"; e1Color = "blue"; e2Color = "cyan"; } break;
+            case "blue": { myColor = color; tmColor = "cyan"; e1Color = "green"; e2Color = "yellow"; } break;
+            case "yellow": { myColor = color; tmColor = "green"; e1Color = "blue"; e2Color = "cyan"; } break;
+            case "cyan": { myColor = color; tmColor = "blue"; e1Color = "green"; e2Color = "yellow"; } break;
         }
     }
 

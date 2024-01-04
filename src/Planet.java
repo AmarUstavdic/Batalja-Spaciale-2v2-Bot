@@ -15,6 +15,8 @@ public class Planet {
     private String planetColor;
 
     // Contains distance from this planet, to every other planet
+    private double utility;
+    private int avgDistanceToOtherPlanetsInTurns;
     private int[] distanceTable;
     // indices are basically turns needed for fleets to arrive
     // keys in hashmap are IDs of individual fleets
@@ -53,6 +55,24 @@ public class Planet {
         return a;
     }
 
+    public int attackersInNTurns(int nTurns) {
+        int a = 0;
+        HashMap<Integer, Fleet> attackerMap = attackers[nTurns];
+        for (Fleet fleet : attackerMap.values()) {
+            a += fleet.getFleetSize();
+        }
+        return a;
+    }
+
+    public int defendersInNTurns(int nTurns) {
+        int d = 0;
+        HashMap<Integer, Fleet> attackerMap = defenders[nTurns];
+        for (Fleet fleet : attackerMap.values()) {
+            d += fleet.getFleetSize();
+        }
+        return d;
+    }
+
 
     public int getNumberOfFleetsOverNTurns(int nTurns) {
         // number of reinforcements + generated fleets
@@ -61,7 +81,9 @@ public class Planet {
     }
 
 
-
+    public void calculateUtility(Planet sourcePlanet, double alpha) {
+        this.utility = (planetSize * 10) / Math.pow(this.getDistanceInTurns(sourcePlanet),alpha);
+    }
 
 
     // TODO: Make sure real time needed turns for index are calculated correctly
@@ -141,6 +163,14 @@ public class Planet {
         return name;
     }
 
+    public boolean isNeutral() {
+        return this.planetColor.equals("null");
+    }
+    
+    public double getUtility() {
+        return utility;
+    }
+
     public int getPositionX() {
         return positionX;
     }
@@ -163,6 +193,14 @@ public class Planet {
 
     public void setPlanetColor(String planetColor) {
         this.planetColor = planetColor;
+    }
+
+    public void setAvgDistanceToOtherPlanetsInTurns(int avgDistanceToOtherPlanetsInTurns) {
+        this.avgDistanceToOtherPlanetsInTurns = avgDistanceToOtherPlanetsInTurns;
+    }
+
+    public int getAvgDistanceToOtherPlanetsInTurns() {
+        return avgDistanceToOtherPlanetsInTurns;
     }
 
     public void setDistanceTable(int[] distanceTable) {

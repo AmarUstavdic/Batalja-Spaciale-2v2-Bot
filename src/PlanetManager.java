@@ -92,10 +92,14 @@ public class PlanetManager {
 
             Planet p = planets.get(i);
             int[] distanceTable = new int[planets.size()];
+            int avgDstInTurns = 0;
             for (int j = 0; j < planets.size(); j++) {
                 Planet o = planets.get(j);
-                distanceTable[j] = p.getDistanceInTurns(o);
+                int dst = p.getDistanceInTurns(o);
+                distanceTable[j] = dst;
+                avgDstInTurns += dst;
             }
+            p.setAvgDistanceToOtherPlanetsInTurns(avgDstInTurns / planets.size());
             p.setDistanceTable(distanceTable);
         }
         distanceTablesInitialized = true;
@@ -115,6 +119,16 @@ public class PlanetManager {
         return pa;
     }
 
+    public ArrayList<Planet> getCandidatePlanets() {
+        ArrayList<Planet> pc = new ArrayList<>();
+        for (int pid : nPlanets) pc.add(planets.get(pid));
+        for (int pid : e1Planets) pc.add(planets.get(pid));
+        for (int pid : e2Planets) pc.add(planets.get(pid));
+        return pc;
+    }
+
+
+
     public ArrayList<Integer> getAllPotentialTargets() {
         ArrayList<Integer> potentialTargets = new ArrayList<>();
         potentialTargets.addAll(e1Planets);
@@ -130,8 +144,7 @@ public class PlanetManager {
 
     public void clearInactiveFleets() {
         for (Planet planet : planets.values()) {
-
-
+            planet.clearInactiveFleets();
         }
     }
 

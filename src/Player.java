@@ -2,9 +2,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Random;
+import java.util.*;
 
 public class Player {
 
@@ -31,6 +29,53 @@ public class Player {
 
 
 				ArrayList<Planet> myPlanets = planetManager.getMyPlanets();
+				ArrayList<Planet> candidates = planetManager.getCandidatePlanets();
+
+				// alpha = 1 - not bad
+				// alpha = 0.5 - seems to perform better
+				double alpha = 0.7;
+				int[] sent = new int[planetManager.getNumberOfPlanets()];
+				if (!myPlanets.isEmpty()) {
+					for (Planet p : myPlanets) {
+
+						for (Planet c : candidates) {
+							c.calculateUtility(p, alpha);
+						}
+						candidates.sort(Comparator.comparingDouble(Planet::getUtility).reversed());
+
+						// TODO: There is potential error in handling fleets, what happens when colors change?
+						// well attackers become defenders, and defenders attackers... not good
+						// and managing sent fleets like this is not good, you lazy bitch :)
+						int index = 0;
+						Planet first = candidates.get(index);
+						while (sent[first.getName()] != 0 || index+1 == sent.length) {
+							index++;
+							first = candidates.get(index);
+						}
+
+						int ffs = first.getFleetSize();
+						int dit = first.getDistanceInTurns(p);
+						int ddd = first.defendersInNTurns(dit);
+						int aaa = p.attackersInNTurns(dit);
+						int nft = first.getNumberOfFleetsOverNTurns(dit);
+						if (first.isNeutral()) {
+							if (ffs + nft + first.attackersInNTurns(dit) < p.getFleetSize()) {
+								System.out.println("A " + p.getName() + " " + first.getName() + " " + p.getFleetSize());
+								sent[first.getName()] = p.getFleetSize();
+							}
+						} else {
+							if ((ffs + nft + ddd < p.getFleetSize() - aaa)) {
+								System.out.println("A " + p.getName() + " " + first.getName() + " " + p.getFleetSize());
+								sent[first.getName()] = p.getFleetSize();
+							}
+						}
+
+
+					}
+				}
+
+				/*
+
 
 				int[] counter = new int[planetManager.getNumberOfPlanets()];
 
@@ -59,7 +104,7 @@ public class Player {
 							int dispatch = 0;
                             for (int i = 1; i < attackers.length; i++) {
 								int fInNTurns = p.getFleetSize() + p.getNumberOfFleetsOverNTurns(i);
-								int diff = fInNTurns - attackers[i];
+								int diff = fInNTurns - attackers[i] - 5;
 								if (diff > dispatch) {
 									dispatch = diff;
 								} else {
@@ -72,6 +117,8 @@ public class Player {
 					}
 
 				}
+
+				 */
 				
 				/*
 					- send a hello message to your teammate bot :)
@@ -120,9 +167,9 @@ public class Player {
 			//logToFile(line);
 
 			switch (line.charAt(0)) {
-				case 'U' -> universe.initialize(line);
-				case 'P' -> planetManager.parse(line);
-				case 'F' -> fleetManager.parse(line);
+				case 'U': universe.initialize(line); break;
+				case 'P': planetManager.parse(line); break;
+				case 'F': fleetManager.parse(line); break;
 			}
 		}
 	}
