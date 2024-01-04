@@ -12,13 +12,12 @@ public class Player {
 
 	public static Universe universe = new Universe();
 	public static PlanetManager planetManager = new PlanetManager(universe);
+	public static FleetManager fleetManager = new FleetManager(universe);
 
 
 	public static void main(String[] args) throws Exception {
 
 		try {
-
-			Random rand = new Random();
 
 			while (true) {
 
@@ -27,12 +26,11 @@ public class Player {
 				if (!planetManager.isDistanceTablesInitialized()) {
 					planetManager.initDistanceTables();
 				}
+				// Clean fleet manager, for not containing dead values
+				fleetManager.removeDeadFleets();
+
 
 				ArrayList<Planet> myPlanets = planetManager.getMyPlanets();
-
-
-				// playground and chaos for now :)
-
 
 				int[] counter = new int[planetManager.getNumberOfPlanets()];
 
@@ -56,7 +54,7 @@ public class Player {
 
 					if (target != -1) {
 						for(Planet p : myPlanets) {
-							System.out.println("A " + p.getName() + " " + target);
+							System.out.println("A " + p.getName() + " " + target + " " + 1);
 						}
 					}
 
@@ -111,6 +109,7 @@ public class Player {
 			switch (line.charAt(0)) {
 				case 'U' -> universe.initialize(line);
 				case 'P' -> planetManager.parse(line);
+				case 'F' -> fleetManager.parse(line);
 			}
 		}
 	}
