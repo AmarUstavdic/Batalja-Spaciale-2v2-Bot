@@ -1,20 +1,32 @@
 public class Universe {
 
-    private int width;
-    private int height;
-    private String myColor;
-    private String teammateColor;
 
+    private String myColor, tmColor, e1Color, e2Color;
 
     public void initialize(String line) {
-        String[] tokens = line.split(" ");
-        width = Integer.parseInt(tokens[1]);
-        height = Integer.parseInt(tokens[2]);
-        myColor = tokens[3];
+        String color = line.split(" ")[3];
+        switch (color) {
+            case "green" -> { myColor = color; tmColor = "yellow"; e1Color = "blue"; e2Color = "cyan"; }
+            case "blue" -> { myColor = color; tmColor = "cyan"; e1Color = "green"; e2Color = "yellow"; }
+            case "yellow" -> { myColor = color; tmColor = "green"; e1Color = "blue"; e2Color = "cyan"; }
+            case "cyan" -> { myColor = color; tmColor = "blue"; e1Color = "green"; e2Color = "yellow"; }
+        }
     }
-
 
     public String getMyColor() {
         return myColor;
     }
+
+    public String getTeammateColor() {
+        return tmColor;
+    }
+
+    public String getEnemy1Color() {
+        return e1Color;
+    }
+
+    public String getEnemy2Color() {
+        return e2Color;
+    }
+
 }
