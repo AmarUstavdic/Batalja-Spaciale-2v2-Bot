@@ -34,15 +34,32 @@ public class Player {
 				// playground and chaos for now :)
 
 
-
+				int[] counter = new int[planetManager.getNumberOfPlanets()];
 
 				if (!myPlanets.isEmpty()) {
 					for (Planet p : myPlanets) {
+
 						int closest = p.getClosestEnemy();
 						if (closest != -1) {
-							System.out.println("A " + p.getName() + " " + closest);
+							counter[closest]++;
 						}
 					}
+
+					int target = -1;
+					int count = 0;
+					for (int i = 0; i < counter.length; i++) {
+						if (count < counter[i]) {
+							target = i;
+							count = counter[i];
+						}
+					}
+
+					if (target != -1) {
+						for(Planet p : myPlanets) {
+							System.out.println("A " + p.getName() + " " + target);
+						}
+					}
+
 				}
 				
 				/*

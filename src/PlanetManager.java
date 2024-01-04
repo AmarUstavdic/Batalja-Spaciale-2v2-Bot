@@ -126,6 +126,14 @@ public class PlanetManager {
         return planets.get(name);
     }
 
+    /**
+     *  This function should not be called before all planets are initialized.
+     *  Returns total number of planets.
+     */
+    public int getNumberOfPlanets() {
+        return planets.size();
+    }
+
     public Universe getUniverse() {
         return universe;
     }
