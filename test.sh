@@ -18,15 +18,7 @@ compile_and_copy() {
 compile_and_copy "$P1_DIR"
 compile_and_copy "$P2_DIR"
 
-# shellcheck disable=SC2115
-rm -rf "$P3_DIR"/*
-cp "$GAME_DIR/Player.java" "$P3_DIR"/
-javac "$P3_DIR"/*
-
-# shellcheck disable=SC2115
-rm -rf "$P4_DIR"/*
-cp "$GAME_DIR/Player.java" "$P4_DIR"/
-javac "$P4_DIR"/*
+# in other dirs, is my latest best player
 
 # Run the game
 java -jar "$GAME_DIR/Game.jar" "$P1_DIR" "$P2_DIR" "$P3_DIR" "$P4_DIR"

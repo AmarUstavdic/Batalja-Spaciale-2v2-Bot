@@ -22,6 +22,10 @@ public class Universe {
         }
     }
 
+    public boolean isAllyFleet(String color) {
+        return this.myColor.equals(color) || this.tmColor.equals(color);
+    }
+
     public int getMaxPlanetDistanceInTurns() {
         return maxPlanetDistanceInTurns;
     }

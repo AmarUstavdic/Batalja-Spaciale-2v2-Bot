@@ -1,7 +1,5 @@
 public class Fleet {
 
-    private boolean referenced;
-
     private final int fleetName;
     private final int fleetSize;
     private final int originPlanet;
@@ -24,10 +22,6 @@ public class Fleet {
         this.currentTurn = currentTurn;
     }
 
-    public boolean isReferenced() {
-        return referenced;
-    }
-
     public int getFleetName() {
         return fleetName;
     }
@@ -48,7 +42,4 @@ public class Fleet {
         return fleetColor;
     }
 
-    public void setReferenced(boolean referenced) {
-        this.referenced = referenced;
-    }
 }
