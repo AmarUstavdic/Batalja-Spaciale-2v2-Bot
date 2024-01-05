@@ -1,8 +1,7 @@
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.*;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+
 
 public class Player {
 
@@ -25,32 +24,67 @@ public class Player {
                 }
 
 
-                ArrayList<Planet> minePlanets = planetManager.getMyPlanets();
-                ArrayList<Planet> neutralPlanets = planetManager.getNeutralPlanets();
-                ArrayList<Planet> axisPlanets = planetManager.getAxisPlanets();
+                ArrayList<Planet> myPlanets = planetManager.getMyPlanets();
+                ArrayList<Planet> candidates = new ArrayList<>();
+                candidates.addAll(planetManager.getNeutralPlanets());
+                candidates.addAll(planetManager.getAxisPlanets());
 
-                if (!minePlanets.isEmpty()) {
-                    if (!neutralPlanets.isEmpty()) {
-                        // focus on neutral planets while there are neutral planets
-                        for (Planet m : minePlanets) {
-                            for (Planet n : neutralPlanets) n.calculateUtility(m, 0.7);
+
+                // do lexicographic sort to figure out which planet to attack
+                // defining custom comparator to do so
+
+                Comparator<Planet> lexicographicComparator = Comparator
+                        .comparingInt(Planet::avgDistanceFromMyPlanets)
+                        .thenComparingDouble(Planet::getPlanetSize)
+                        .thenComparingInt(Planet::calculateTurnsToCapture)
+                        .thenComparingInt(p -> p.isAlly() ? 0 : 1).reversed()
+                        .thenComparingInt(Planet::getFleetSize).reversed();
+
+                //.comparingDouble(Planet::getPlanetSize).reversed();
+                        //.thenComparing(Planet::calculateTurnsToCapture)
+                        //.thenComparingInt(p -> p.isAlly() ? 0 : 1).reversed()
+                        //.thenComparingInt(p -> p.isNeutral() ? 0 : 1).reversed()
+                        //.thenComparingInt(p -> p.isAxis() ? 0 : 1).reversed();
+
+
+
+
+
+                if (!myPlanets.isEmpty()) {
+
+                    candidates.sort(lexicographicComparator);
+
+                    Planet target = candidates.remove(0);
+                    while (target.getRadar().getArrivingFleetsDifference() > 0) {
+                        if (candidates.isEmpty()) break;
+                        target = candidates.remove(0);
+                    }
+
+                    // reminder only my bot forces, for now no communication with other one
+                    int joinedForces = 0;
+                    ArrayList<Planet> attackers = new ArrayList<>();
+                    // sort from closest to...
+                    myPlanets.sort(Comparator.comparingInt(target::getDistanceInTurns));
+
+                    boolean enough = false;
+                    int turns = Integer.MAX_VALUE;
+                    for (Planet m : myPlanets) {
+                        joinedForces += m.getFleetSize();
+                        attackers.add(m);
+                        turns = m.getDistanceInTurns(target);
+                        if (joinedForces > target.getFleetSize() +
+                                (target.isAxis() ? target.getRadar().getAxisReinforcementInNTurns(turns) : 0) +
+                                (target.isAxis() ? target.getNumberOfFleetsOverNTurns(turns) : 0)
+                        ) {
+                            enough = true;
+                            break;
                         }
-                        neutralPlanets.sort(Comparator.comparingDouble(Planet::getUtility).reversed());
+                    }
 
-                        int target = 0;
-                        while (target < neutralPlanets.size() - 1 && (neutralPlanets.get(target).isAlly() || target == neutralPlanets.size() - 1)) {
-                            target++;
+                    if (enough) {
+                        for (Planet a : attackers) {
+                            System.out.println("A " + a.getName() + " " + target.getName() + " " + a.getFleetSize());
                         }
-
-                        for (Planet m : minePlanets) {
-                            System.out.println("A " + m.getName() + " " + neutralPlanets.get(target).getName() + " " + m.getFleetSize());
-                        }
-
-                    } else {
-
-
-
-
                     }
                 }
 
@@ -88,7 +122,7 @@ public class Player {
 
     public static void getGameState() throws NumberFormatException, IOException {
 
-        BufferedReader stdin = new BufferedReader(new java.io.InputStreamReader(System.in));
+        BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
 
         String line = "";
         while (!(line = stdin.readLine()).equals("S")) {
@@ -112,14 +146,14 @@ public class Player {
                     break;
                 case 'F':
                     planetManager.parseFleet(
-							Integer.parseInt(tokens[1]),
-							Integer.parseInt(tokens[2]),
-							Integer.parseInt(tokens[3]),
-							Integer.parseInt(tokens[4]),
-							Integer.parseInt(tokens[5]),
-							Integer.parseInt(tokens[6]),
-							tokens[7]
-					);
+                            Integer.parseInt(tokens[1]),
+                            Integer.parseInt(tokens[2]),
+                            Integer.parseInt(tokens[3]),
+                            Integer.parseInt(tokens[4]),
+                            Integer.parseInt(tokens[5]),
+                            Integer.parseInt(tokens[6]),
+                            tokens[7]
+                    );
                     break;
             }
         }

@@ -67,6 +67,18 @@ public class Radar {
         return totalIncomingFleets(ally) - totalIncomingFleets(axis);
     }
 
+    public int getAxisReinforcementInNTurns(int nTurns) {
+        int acc = 0;
+        for (int i = 0; i < nTurns; i++) {
+            if (axis.containsKey(i)) {
+                for (Fleet f : axis.get(i).values()) {
+                    acc += f.getFleetSize();
+                }
+            }
+        }
+        return acc;
+    }
+
     private int totalIncomingFleets(HashMap<Integer, HashMap<Integer, Fleet>> map) {
         return map.values().stream()
                 .flatMap(innerMap -> innerMap.values().stream())

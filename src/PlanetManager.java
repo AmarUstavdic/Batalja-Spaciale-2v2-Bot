@@ -64,6 +64,10 @@ public class PlanetManager {
         return planets.values().stream().filter(Planet::isMine).collect(Collectors.toCollection(ArrayList::new));
     }
 
+    public ArrayList<Planet> getAllyPlanets() {
+        return planets.values().stream().filter(Planet::isFriendly).collect(Collectors.toCollection(ArrayList::new));
+    }
+
     public ArrayList<Planet> getAxisPlanets() {
         return planets.values().stream().filter(Planet::isAxis).collect(Collectors.toCollection(ArrayList::new));
     }
